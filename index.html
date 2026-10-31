@@ -564,4 +564,107 @@
         function renderTimeline() {
             const container = document.getElementById('timelineContainer');
             timelineData.forEach((d, idx) => {
-                const is20th = d.y === 20
+                const is20th = d.y === 2026;
+                container.innerHTML += `
+                    <div class="border-b border-slate-200 last:border-0">
+                        <button onclick="toggleTimeline(${idx})" class="w-full text-left py-3 px-2 flex items-center justify-between hover:bg-slate-100/50 transition rounded-lg">
+                            <div class="flex items-center gap-4">
+                                <span id="year-${idx}" class="timeline-year w-20 flex-shrink-0 text-slate-600 font-bold ${is20th ? 'text-amber-600' : ''}">${d.y}年</span>
+                                <span class="text-xs ${is20th ? 'bg-amber-500 text-white font-bold px-2 py-0.5 rounded' : 'text-slate-500'}">${d.g}</span>
+                            </div>
+                            <i id="icon-${idx}" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-300"></i>
+                        </button>
+                        <div id="content-${idx}" class="timeline-content pl-24 pr-4 pb-2">
+                            <p class="text-sm text-slate-700 border-l-2 border-amber-400 pl-3 py-1 bg-amber-50 rounded-r">${d.txt}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function toggleTimeline(id) {
+            const content = document.getElementById('content-' + id);
+            const year = document.getElementById('year-' + id);
+            const icon = document.getElementById('icon-' + id);
+            const isOpen = content.classList.contains('open');
+            
+            // アコーディオンの開閉リセット
+            document.querySelectorAll('.timeline-content').forEach(el => el.classList.remove('open'));
+            document.querySelectorAll('.timeline-year').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('[id^="icon"]').forEach(el => el.style.transform = 'rotate(0deg)');
+
+            if(!isOpen) {
+                content.classList.add('open');
+                year.classList.add('active');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // -----------------------
+        // 寄せ書きボード
+        // -----------------------
+        let messages = [];
+
+        function loadMessages() {
+            const saved = localStorage.getItem('ob_messages');
+            if(saved) messages = JSON.parse(saved);
+            renderMessages();
+        }
+
+        function addMessage() {
+            const gen = document.getElementById('msgGen').value.trim();
+            const name = document.getElementById('msgName').value.trim();
+            const text = document.getElementById('msgText').value.trim();
+            
+            if(!name || !text) return alert("お名前とメッセージは入力必須です。");
+            
+            messages.push({ 
+                id: Date.now(), 
+                gen: gen ? `${gen}期生` : "期生不明", 
+                name: name, 
+                text: text 
+            });
+            
+            // 入力欄をリセット
+            document.getElementById('msgGen').value = '';
+            document.getElementById('msgName').value = '';
+            document.getElementById('msgText').value = '';
+            
+            localStorage.setItem('ob_messages', JSON.stringify(messages));
+            renderMessages();
+        }
+
+        function renderMessages() {
+            const list = document.getElementById('messagesList');
+            list.innerHTML = '';
+            if(messages.length === 0) {
+                list.innerHTML = '<p class="text-center text-slate-400 text-sm mt-10">まだメッセージはありません。感想を一番乗りで書き込みましょう！</p>';
+                return;
+            }
+            messages.forEach(m => {
+                list.innerHTML += `
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <span class="text-[10px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded">${m.gen}</span>
+                            <span class="font-bold text-slate-700 text-xs">${m.name}</span>
+                        </div>
+                        <p class="text-sm text-slate-600 leading-relaxed">${m.text}</p>
+                    </div>
+                `;
+            });
+            // 常に一番下へスクロール
+            list.scrollTop = list.scrollHeight;
+        }
+
+        // -----------------------
+        // 初期化
+        // -----------------------
+        window.addEventListener('DOMContentLoaded', () => {
+            loadParticipants();
+            renderAwards();
+            renderTimeline();
+            loadMessages();
+        });
+    </script>
+</body>
+</html>
