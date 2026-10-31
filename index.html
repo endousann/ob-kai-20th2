@@ -158,7 +158,6 @@
         <section id="map" class="glass-panel p-6 sm:p-8 rounded-3xl max-w-4xl mx-auto">
             <h2 class="text-2xl font-bold text-amber-600 text-center mb-6"><i class="fa-solid fa-map"></i> 会場マップ・座席表</h2>
             <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm flex justify-center">
-                <!-- ここが画像ファイル名の指定部分です。アップロードするファイル名と一致させてください -->
                 <img src="./map.jpg" alt="座席表" class="w-full max-w-3xl h-auto rounded-xl">
             </div>
             <p class="text-sm text-slate-600 mt-4 text-center font-bold">※電子タバコが喫煙可能な席は、バーカウンター横の「<span class="text-amber-600">10番テーブル</span>」となります。</p>
@@ -295,7 +294,7 @@
         updateCountdown();
 
         // -----------------------
-        // 参加者一覧 (名簿連動対応)
+        // 参加者一覧 (名簿連動対応・エラー回避強化版)
         // -----------------------
         let isAdmin = false;
         let participants = []; // { id, gen, name, company }
@@ -384,19 +383,27 @@
             { gen: 0, name: "星川 崇", company: "教員" }
         ];
 
-        // データバージョン管理（この値が変わるとキャッシュを最新名簿で上書きリセットします）
-        const DATA_VERSION = "v2_final";
+        // データバージョンを強制アップデートして過去のエラーデータを完全に消去します
+        const DATA_VERSION = "v3_reset";
 
         function loadParticipants() {
-            const savedVersion = localStorage.getItem('ob_data_version');
-            if(savedVersion !== DATA_VERSION) {
-                // バージョンが違う場合、初期名簿データで強制上書き
+            try {
+                const savedVersion = localStorage.getItem('ob_data_version');
+                if(savedVersion !== DATA_VERSION) {
+                    // バージョンが違う場合、初期名簿データで強制上書き（エラー防止）
+                    participants = defaultParticipants.map((p, i) => ({ id: Date.now() + i, gen: p.gen, name: p.name, company: p.company }));
+                    localStorage.setItem('ob_participants', JSON.stringify(participants));
+                    localStorage.setItem('ob_data_version', DATA_VERSION);
+                } else {
+                    const saved = localStorage.getItem('ob_participants');
+                    participants = saved ? JSON.parse(saved) : [];
+                }
+            } catch (e) {
+                // 万が一キャッシュが壊れていても、エラーで止めずに初期状態に戻して復活させます
+                console.error("データ読み込みエラー、リセットします", e);
                 participants = defaultParticipants.map((p, i) => ({ id: Date.now() + i, gen: p.gen, name: p.name, company: p.company }));
                 localStorage.setItem('ob_participants', JSON.stringify(participants));
                 localStorage.setItem('ob_data_version', DATA_VERSION);
-            } else {
-                const saved = localStorage.getItem('ob_participants');
-                participants = JSON.parse(saved) || [];
             }
             renderParticipants();
         }
@@ -481,11 +488,9 @@
                     </div>
                 ` : '';
 
-                // 期生ラベルの出し分け（0期生は教員）
                 let genLabel = p.gen + "期生";
                 if(p.gen === 0) genLabel = "教職員・ゲスト";
 
-                // 企業名があれば表示
                 const companyHtml = p.company ? `<div class="text-[10px] text-slate-500 truncate mt-0.5" title="${p.company}"><i class="fa-regular fa-building mr-1"></i>${p.company}</div>` : '';
 
                 list.innerHTML += `
@@ -504,13 +509,11 @@
         // -----------------------
         // 20年間の表彰 (10人分データ)
         // -----------------------
-        // ▼ 当日までに受賞者が決まったら、ここのデータを書き換えます
         const awardData = Array.from({length: 10}, (_, i) => ({
             title: `アワード ${i + 1}`,
             name: "受賞者のお名前",
             gen: "?",
             desc: "ここに表彰の理由や一言コメントが入ります。",
-            // 画像は「1:1（正方形）」で「400x400 ~ 600x600」推奨
             img: "https://via.placeholder.com/400x400.png?text=No+Image"
         }));
 
@@ -588,7 +591,6 @@
             const icon = document.getElementById('icon-' + id);
             const isOpen = content.classList.contains('open');
             
-            // アコーディオンの開閉リセット
             document.querySelectorAll('.timeline-content').forEach(el => el.classList.remove('open'));
             document.querySelectorAll('.timeline-year').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('[id^="icon"]').forEach(el => el.style.transform = 'rotate(0deg)');
@@ -606,8 +608,12 @@
         let messages = [];
 
         function loadMessages() {
-            const saved = localStorage.getItem('ob_messages');
-            if(saved) messages = JSON.parse(saved);
+            try {
+                const saved = localStorage.getItem('ob_messages');
+                messages = saved ? JSON.parse(saved) : [];
+            } catch (e) {
+                messages = [];
+            }
             renderMessages();
         }
 
@@ -625,7 +631,6 @@
                 text: text 
             });
             
-            // 入力欄をリセット
             document.getElementById('msgGen').value = '';
             document.getElementById('msgName').value = '';
             document.getElementById('msgText').value = '';
@@ -652,7 +657,6 @@
                     </div>
                 `;
             });
-            // 常に一番下へスクロール
             list.scrollTop = list.scrollHeight;
         }
 
