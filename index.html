@@ -32,8 +32,8 @@
         .glass-panel { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(245, 158, 11, 0.3); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
         .glass-panel-gold { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); border: 1px solid rgba(245, 158, 11, 0.5); box-shadow: 0 10px 25px rgba(245, 158, 11, 0.1); }
         .text-gradient-gold { background: linear-gradient(135deg, #B45309 10%, #D97706 50%, #F59E0B 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(241, 245, 249, 0.8); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(241, 245, 249, 0.8); border-radius: 9999px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.4); border-radius: 9999px; }
         
         /* 年表アコーディオン用アニメーション */
@@ -140,7 +140,7 @@
                     </div>
                     <div>
                         <div class="font-bold text-slate-800"><i class="fa-solid fa-smoking text-amber-500 w-5"></i> 喫煙について</div>
-                        <p class="text-slate-600 text-xs mt-1">電子タバコのみ会場内で喫煙可能です。<br>※吸える席は「10番テーブル」のみとなります。</p>
+                        <p class="text-slate-600 text-xs mt-1">電子タバコのみ会場内で喫煙可能です。<br>※吸える席は「1番、3番テーブル」となります。</p>
                     </div>
                     <div>
                         <div class="font-bold text-slate-800"><i class="fa-solid fa-camera text-amber-500 w-5"></i> 撮影・ライブ配信</div>
@@ -157,10 +157,19 @@
         <!-- 会場マップ・座席表 -->
         <section id="map" class="glass-panel p-6 sm:p-8 rounded-3xl max-w-4xl mx-auto">
             <h2 class="text-2xl font-bold text-amber-600 text-center mb-6"><i class="fa-solid fa-map"></i> 会場マップ・座席表</h2>
-            <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm flex justify-center">
+            
+            <!-- メイン座席表 -->
+            <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm flex justify-center mb-4">
                 <img src="./map.jpg" alt="座席表" class="w-full max-w-3xl h-auto rounded-xl">
             </div>
-            <p class="text-sm text-slate-600 mt-4 text-center font-bold">※電子タバコが喫煙可能な席は、バーカウンター横の「<span class="text-amber-600">10番テーブル</span>」となります。</p>
+            <p class="text-sm text-slate-600 mt-2 mb-8 text-center font-bold">※電子タバコが喫煙可能な席は、「<span class="text-amber-600">1番、3番テーブル</span>」となります。</p>
+
+            <!-- 詳細版座席表 -->
+            <h3 class="text-lg font-bold text-slate-700 text-center mb-4 border-t border-slate-200 pt-6">座席表（詳細版）</h3>
+            <div class="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm overflow-x-auto custom-scrollbar">
+                <!-- スマートフォンでも表の幅が潰れないように min-w を指定しています -->
+                <img src="./map-details_2.png" alt="座席表詳細" class="w-full min-w-[800px] h-auto rounded-xl block mx-auto">
+            </div>
         </section>
 
         <!-- スケジュール -->
@@ -303,7 +312,7 @@
             { gen: 0, name: "村井 生", company: "日本電子専門学校" },
             { gen: 1, name: "斉藤 隼人", company: "株式会社EXIT" },
             { gen: 1, name: "高橋 隆広", company: "株式会社Blastrain" },
-            { gen: 3, name: "中村 明輝仁", company: "未定" },
+            { gen: 3, name: "中村 明輝仁", company: "" },
             { gen: 3, name: "﨑原 翔太郎", company: "" },
             { gen: 3, name: "酒井 紀輝", company: "" },
             { gen: 3, name: "田所 明", company: "株式会社エクストリーム" },
@@ -320,12 +329,12 @@
             { gen: 7, name: "加山 圭", company: "株式会社EXIT" },
             { gen: 7, name: "宇喜多 俊幸", company: "NHN PlayArt株式会社" },
             { gen: 8, name: "じゅん", company: "株式会社カプコン" },
-            { gen: 8, name: "日沼 宗太郎", company: "自営業" },
+            { gen: 8, name: "日沼 宗太郎", company: "" },
             { gen: 8, name: "片平 武", company: "" },
             { gen: 8, name: "玉置 憲斗", company: "株式会社baton" },
             { gen: 8, name: "谷岡 諒一", company: "株式会社WFS" },
             { gen: 8, name: "内藤 大貴", company: "株式会社サクセス" },
-            { gen: 8, name: "山本 拓実一成", company: "株式会社" },
+            { gen: 8, name: "山本 拓実一成", company: "" },
             { gen: 8, name: "SESTI ALBERTO", company: "Square Enix" },
             { gen: 9, name: "佐々木 凜", company: "" },
             { gen: 9, name: "浪岡 大", company: "ETHEREAL株式会社" },
@@ -378,19 +387,18 @@
             { gen: 20, name: "岩下 晃大", company: "" },
             { gen: 20, name: "須釜 颯也", company: "" },
             { gen: 20, name: "唐澤 佑", company: "" },
-            { gen: 0, name: "水戸部 勉", company: "教員" },
-            { gen: 0, name: "岩村 有里子", company: "元就職部職員 / 非常勤講師" },
-            { gen: 0, name: "星川 崇", company: "教員" }
+            { gen: 0, name: "水戸部 勉", company: "" },
+            { gen: 0, name: "岩村 有里子", company: "" },
+            { gen: 0, name: "星川 崇", company: "" }
         ];
 
-        // データバージョンを強制アップデートして過去のエラーデータを完全に消去します
-        const DATA_VERSION = "v3_reset";
+        // データバージョンを更新（古いブラウザのキャッシュをクリアして新しい名簿を強制読み込み）
+        const DATA_VERSION = "v4_clean";
 
         function loadParticipants() {
             try {
                 const savedVersion = localStorage.getItem('ob_data_version');
                 if(savedVersion !== DATA_VERSION) {
-                    // バージョンが違う場合、初期名簿データで強制上書き（エラー防止）
                     participants = defaultParticipants.map((p, i) => ({ id: Date.now() + i, gen: p.gen, name: p.name, company: p.company }));
                     localStorage.setItem('ob_participants', JSON.stringify(participants));
                     localStorage.setItem('ob_data_version', DATA_VERSION);
@@ -399,7 +407,6 @@
                     participants = saved ? JSON.parse(saved) : [];
                 }
             } catch (e) {
-                // 万が一キャッシュが壊れていても、エラーで止めずに初期状態に戻して復活させます
                 console.error("データ読み込みエラー、リセットします", e);
                 participants = defaultParticipants.map((p, i) => ({ id: Date.now() + i, gen: p.gen, name: p.name, company: p.company }));
                 localStorage.setItem('ob_participants', JSON.stringify(participants));
